@@ -12,9 +12,9 @@ import Photos
 import Combine
 
 class PhotoWriter {
-  enum Error: Swift.Error {
-    case couldNotSavePhoto
-    case generic(Swift.Error)
-  }
-  
+   enum Error: Swift.Error {
+      case couldNotSavePhoto
+      case generic(Swift.Error)
+   }
+   
 }
