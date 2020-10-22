@@ -63,11 +63,16 @@ class MainViewController: UIViewController {
    }
    
    @IBAction func actionAdd() {
-//      let newImages = images.value + [UIImage(named: "IMG_1907.jpg")!]
-//      images.send(newImages)
-      
       let photos = storyboard!.instantiateViewController(withIdentifier: "PhotosViewController") as! PhotosViewController
       
+      let newPhotos = photos.selectedPhotos
+      
+      newPhotos
+         .map { [unowned self] newImage in
+            return self.images.value + [newImage]
+         }
+         .assign(to: \.value, on: images)
+         .store(in: &subscription)
       navigationController!.pushViewController(photos, animated: true)
    }
    
