@@ -43,11 +43,11 @@ class PhotosViewController: UICollectionViewController {
             }
          }
       }
-      selectedPhotosSubject.send(completion: .finished)
    }
    
    override func viewWillDisappear(_ animated: Bool) {
       super.viewWillDisappear(animated)
+      selectedPhotosSubject.send(completion: .finished)
    }
    
    // MARK: - UICollectionViewDataSource
