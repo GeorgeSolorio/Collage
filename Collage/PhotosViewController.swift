@@ -92,8 +92,6 @@ class PhotosViewController: UICollectionViewController {
          
          self.selectedPhotosSubject.send(image)
       })
-      
-      self.selectedPhotosCount += 1
    }
    
 }
