@@ -60,6 +60,17 @@ class MainViewController: UIViewController {
    @IBAction func actionSave() {
       guard let image = imagePreview.image else { return }
       
+      PhotoWriter.save(image)
+         .sink(receiveCompletion: { [unowned self] completion in
+            
+            if case .failure(let error) = completion {
+               self.showMessage("Error", description: error.localizedDescription)
+            }
+            self.actionClear()
+         }, receiveValue: { [unowned self] id in
+            self.showMessage("Saved with id: \(id)")
+         })
+         .store(in: &subscription)
    }
    
    @IBAction func actionAdd() {
@@ -77,10 +88,9 @@ class MainViewController: UIViewController {
    }
    
    private func showMessage(_ title: String, description: String? = nil) {
-      let alert = UIAlertController(title: title, message: description, preferredStyle: .alert)
-      alert.addAction(UIAlertAction(title: "Close", style: .default, handler: { alert in
-         self.dismiss(animated: true, completion: nil)
-      }))
-      present(alert, animated: true, completion: nil)
+     
+      alert(title: title, text: description)
+         .sink(receiveValue: { _ in })
+         .store(in: &subscription)
    }
 }
