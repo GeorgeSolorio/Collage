@@ -48,7 +48,6 @@ class MainViewController: UIViewController {
       buttonSave.isEnabled = photos.count > 0 && photos.count % 2 == 0
       buttonClear.isEnabled = photos.count > 0
       itemAdd.isEnabled = photos.count < 6
-      title = photos.count > 0 ? "\(photos.count) photos" : "Collage"
    }
    
    // MARK: - Actions
@@ -76,7 +75,13 @@ class MainViewController: UIViewController {
    @IBAction func actionAdd() {
       let photos = storyboard!.instantiateViewController(withIdentifier: "PhotosViewController") as! PhotosViewController
       
-      let newPhotos = photos.selectedPhotos
+      photos.$selectedPhotosCount
+         .filter { $0 > 0 }
+         .map { "Selected \($0) photos"}
+         .assign(to: \.title, on: self)
+         .store(in: &subscription)
+      
+      let newPhotos = photos.selectedPhotos.share()
       
       newPhotos
          .map { [unowned self] newImage in
