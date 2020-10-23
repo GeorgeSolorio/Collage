@@ -76,13 +76,30 @@ class MainViewController: UIViewController {
    @IBAction func actionAdd() {
       let photos = storyboard!.instantiateViewController(withIdentifier: "PhotosViewController") as! PhotosViewController
       
-      let newPhotos = photos.selectedPhotos.share()
+      let newPhotos = photos.selectedPhotos
+         .prefix(while: { [unowned self] _ in
+            return self.images.value.count < 6
+         })
+         .filter { newImage in
+            return newImage.size.width > newImage.size.height
+         }
+         .share()
       
       newPhotos
          .map { [unowned self] newImage in
             return self.images.value + [newImage]
          }
          .assign(to: \.value, on: images)
+         .store(in: &subscription)
+      
+      photos.selectedPhotos
+         .filter { [unowned self] _ in self.images.value.count == 6 }
+         .flatMap { [unowned self] _ in
+            self.alert(title: "Limit reached", text: "To add more than 6 photos please purchase Collage Pro")
+         }
+         .sink(receiveValue: {  [unowned self] _ in
+            self.navigationController?.popViewController(animated: true)
+         })
          .store(in: &subscription)
       
       newPhotos
@@ -92,6 +109,7 @@ class MainViewController: UIViewController {
             self.updateUI(photos: self.images.value)
          }, receiveValue: { _ in })
          .store(in: &subscription)
+      
       
       navigationController!.pushViewController(photos, animated: true)
    }
